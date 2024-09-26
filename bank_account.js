@@ -1,49 +1,81 @@
 /*  
  *  Nama    :   Muhammad Habib Al Farabi (BES2409KM7040)
  *  Kelas   :   BEJS 2
- *  Chapter :   1
+ *  Chapter :   2
  */
 
-let state = 1;
-let saldo = 0;
-
-const tambahSaldo = () => {
-    nominal = parseFloat(prompt('Silahkan tambah saldo Anda'));
-    
-    if (nominal >= 0) {
-        saldo += nominal;
-        alert(`Saldo setelah ditambah: ${saldo}`);
-    } else {
-        alert('Operasi tambah saldo gagal! Nominal pengurangan saldo tidak valid.');
+class InvalidTypeError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidTypeError';
     }
+}
+
+class InvalidAmountError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidAmountError';
+    }
+}
+
+class InsufficientFundsError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InsufficientFundsError';
+    }
+}
+
+class BankAccount {
+    #balance;
+
+    constructor() {
+        this.#balance = 0;
+        console.log('Successfully created a new account!');
+        console.log(`Initial balance: ${this.#balance}\n`);
+    }
+
+    deposit(amount) {
+        return new Promise((resolve, reject) => {
+            if (typeof amount !== 'number') {
+                reject(new InvalidTypeError('Invalid type!'));
+                return;
+            } else if (amount <= 0) {
+                reject(new InvalidAmountError('Invalid amount!'));
+                return;
+            }
+
+            setTimeout(() => {
+                this.#balance += amount;
+                resolve();
+            }, 1000);
+        });
+    }
+
+    withdraw(amount) {
+        return new Promise((resolve, reject) => {
+            if (typeof amount !== 'number') {
+                reject(new InvalidTypeError('Invalid type!'));
+                return;
+            } else if (amount > this.#balance) {
+                reject(new InsufficientFundsError('Insufficient funds!'));
+                return;
+            } else if (amount === 0) {
+                reject(new InvalidAmountError('Invalid amount!'));
+                return;
+            }
+
+            setTimeout(() => {
+                this.#balance -= amount;
+                resolve();
+            }, 1000);
+        });
+    }
+
+    getBalance() {
+        return this.#balance;
+    }
+}
+
+module.exports = {
+    BankAccount
 };
-
-const kurangiSaldo = () => {
-    nominal = parseFloat(prompt('Silahkan kurangi saldo Anda'));
-
-    if (nominal <= saldo) {
-        saldo -= nominal;
-        alert(`Saldo setelah dikurangi: ${saldo}`);
-    } else if (nominal > saldo) {
-        alert('Operasi kurangi saldo gagal! Nominal pengurangan saldo melebihi saldo yang tersedia.');
-    } else {
-        alert('Operasi kurangi saldo gagal! Nominal pengurangan saldo tidak valid.');
-    }
-};
-
-do {
-    state = parseInt(prompt(`Saldo Anda: ${saldo}\n1. Tambah Saldo\n2. Kurangi Saldo\n0. Exit Program`));
-
-    switch (state) {
-        case 1:
-            tambahSaldo();
-            break;
-        case 2:
-            kurangiSaldo();
-            break;
-        default:
-            continue;
-    }
-} while (state);
-
-alert(`Saldo Anda: ${saldo}`);
