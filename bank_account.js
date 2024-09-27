@@ -25,18 +25,17 @@ class InsufficientFundsError extends Error {
     }
 }
 
-class BankAccount {
+export class BankAccount {
     #balance;
 
     constructor() {
         this.#balance = 0;
-        console.log('Successfully created a new account!');
-        console.log(`Initial balance: ${this.#balance}\n`);
+        alert(`Successfully created a new account!\nInitial balance: ${this.#balance}\n`);
     }
 
     deposit(amount) {
         return new Promise((resolve, reject) => {
-            if (typeof amount !== 'number') {
+            if (isNaN(amount)) {
                 reject(new InvalidTypeError('Invalid type!'));
                 return;
             } else if (amount <= 0) {
@@ -53,13 +52,13 @@ class BankAccount {
 
     withdraw(amount) {
         return new Promise((resolve, reject) => {
-            if (typeof amount !== 'number') {
+            if (isNaN(amount)) {
                 reject(new InvalidTypeError('Invalid type!'));
                 return;
             } else if (amount > this.#balance) {
                 reject(new InsufficientFundsError('Insufficient funds!'));
                 return;
-            } else if (amount === 0) {
+            } else if (amount <= 0) {
                 reject(new InvalidAmountError('Invalid amount!'));
                 return;
             }
@@ -75,7 +74,3 @@ class BankAccount {
         return this.#balance;
     }
 }
-
-module.exports = {
-    BankAccount
-};
